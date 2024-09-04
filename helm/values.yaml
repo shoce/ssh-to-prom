@@ -1,0 +1,13 @@
+---
+
+ImageNameSshToProm: ghcr.io/shoce/ssh-to-prom
+ImageTagSshToProm: 240904.1510.0
+
+AuthLogPath: "/var/log/auth.log"
+
+MetricsPort: 80
+
+GeolocationEnable: false
+
+DEBUG: false
+

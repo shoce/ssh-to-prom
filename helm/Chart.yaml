@@ -1,0 +1,7 @@
+apiVersion: v2
+name: helm.ssh-to-prom
+description: Track failed ssh access attempts and expose them as prometheus metrics
+type: application
+version: __VERSION__
+appVersion: __VERSION__
+home: https://github.com/shoce/ssh-to-prom/helm/index.html

@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ $.Release.Namespace }}
+  name: ssh-to-prom
+  labels:
+    app: ssh-to-prom
+spec:
+  selector:
+    matchLabels:
+      app: ssh-to-prom
+  template:
+    metadata:
+      name: ssh-to-prom
+      labels:
+        app: ssh-to-prom
+      annotations:
+    spec:
+      volumes:
+      - name: auth-log-volume
+        hostPath:
+          path: "{{ $.Values.AuthLogPath }}"
+          type: File
+          readOnly: true
+      containers:
+      - name: ssh-to-prom
+        imagePullPolicy: IfNotPresent
+        image: "{{ $.Values.ImageNameSshToProm }}:{{ $.Values.ImageTagSshToProm }}"
+        ports:
+          - containerPort: {{ $.Values.MetricsPort }}
+        envFrom:
+          - configMapRef:
+              name: ssh-to-prom
+        volumeMounts:
+          - mountPath: "{{ $.Values.AuthLogPath }}"
+            name: auth-log-volume
+        command:
+          - "./ssh-to-prom"
+          - "-f"
+          - "{{ $.Values.AuthLogPath }}"
+          - "-m"
+          - ":{{ $.Values.MetricsPort }}"
+          - "-g"
+          - "{{ $.Values.GeolocationEnable }}"
+          - "-d"
+          - "{{ $.Values.DEBUG }}"
+
