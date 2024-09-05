@@ -1,7 +1,7 @@
 ---
 
 ImageNameSshToProm: ghcr.io/shoce/ssh-to-prom
-ImageTagSshToProm: 240904.1510.0
+ImageTagSshToProm: 240905.1924.0
 
 AuthLogPath: "/var/log/auth.log"
 
