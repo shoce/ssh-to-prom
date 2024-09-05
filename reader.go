@@ -1,8 +1,9 @@
 package main
 
 import (
-	tail "github.com/papertrail/go-tail/follower"
 	"io"
+
+	tail "github.com/papertrail/go-tail/follower"
 )
 
 // AsyncEventReader defines a StartStopper interface for an async read worker

@@ -22,7 +22,7 @@ type failedConnEventParser struct{}
 
 var (
 	errWrongFormat = errors.New("wrong event format")
-	eRegex         = regexp.MustCompile(`^(?P<ts>[a-zA-Z]{3} {1,2}[0-9]{1,2} [0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}).*: Invalid user (?P<U>\w+) from (?P<I>[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}) port (?P<port>([0-9]{5,6}))`)
+	eRegex         = regexp.MustCompile(`^(?<ts>[-0-9T]+).*: Invalid user (?<user>\w+) from (?<addr>[^ ]+) port (?<port>[^ ]+)`)
 )
 
 func (p failedConnEventParser) Parse(s string) (FailedConnEvent, error) {
@@ -36,7 +36,7 @@ func (p failedConnEventParser) Parse(s string) (FailedConnEvent, error) {
 		return FailedConnEvent{}, errWrongFormat
 	}
 
-	ts, err := time.Parse(time.Stamp, rs[1])
+	ts, err := time.Parse("2006-01-02T15:04:05", rs[1])
 	if err != nil {
 		return FailedConnEvent{}, errWrongFormat
 	}
