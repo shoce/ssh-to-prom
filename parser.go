@@ -25,7 +25,9 @@ var (
 
 	eRegex = regexp.MustCompile(
 		`^([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]).*: ` +
-			`Invalid user (\S+) from (\S+) port (\S+)`,
+			`Invalid user (\S+) ` +
+			`from (\S+) ` +
+			`port (\S+)`,
 	)
 )
 
