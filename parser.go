@@ -22,7 +22,11 @@ type failedConnEventParser struct{}
 
 var (
 	errWrongFormat = errors.New("wrong event format")
-	eRegex         = regexp.MustCompile(`^(?<ts>[-0-9T]+).*: Invalid user (?<username>\w+) from (?<ipaddr>[^ ]+) port (?<tcpport>[^ ]+)`)
+
+	eRegex = regexp.MustCompile(
+		`^([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]).*: ` +
+			`Invalid user (\S+) from (\S+) port (\S+)`,
+	)
 )
 
 func (p failedConnEventParser) Parse(s string) (FailedConnEvent, error) {
