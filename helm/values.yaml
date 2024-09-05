@@ -3,7 +3,7 @@
 ImageNameSshToProm: ghcr.io/shoce/ssh-to-prom
 ImageTagSshToProm: 240905.1924.0
 
-Domain: ssh-to-prom.domain.com
+IngressDomain: ssh-to-prom.domain.com
 
 AuthLogPath: "/var/log/auth.log"
 

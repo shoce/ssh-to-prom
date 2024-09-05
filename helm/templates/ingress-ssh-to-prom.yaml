@@ -14,9 +14,9 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - {{ $.Values.Domain }}
+    - {{ $.Values.IngressDomain }}
   rules:
-  - host: {{ $.Values.Domain }}
+  - host: {{ $.Values.IngressDomain }}
     http:
       paths:
       - path: /
