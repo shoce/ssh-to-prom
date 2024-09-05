@@ -22,7 +22,6 @@ spec:
         hostPath:
           path: "{{ $.Values.AuthLogPath }}"
           type: File
-          readOnly: true
       containers:
       - name: ssh-to-prom
         imagePullPolicy: IfNotPresent
