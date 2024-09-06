@@ -23,23 +23,41 @@ type failedConnEventParser struct{}
 var (
 	errWrongFormat = errors.New("wrong event format")
 
-	eRegex = regexp.MustCompile(
-		`^([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]).*: ` +
+	// https://pkg.go.dev/regexp/syntax
+	eRegexp1 = regexp.MustCompile(
+		`^(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d)\..*: ` +
 			`Invalid user (\S+) ` +
 			`from (\S+) ` +
 			`port (\S+)`,
 	)
+	// https://pkg.go.dev/time
+	eTsFmt1 = "2006-01-02T15:04:05"
+
+	// https://pkg.go.dev/regexp/syntax
+	eRegexp2 = regexp.MustCompile(
+		`^(\w\w\w +\d\d? \d\d:\d\d:\d\d) .*: ` +
+			`Invalid user (\S+) ` +
+			`from (\S+) ` +
+			`port (\S+)`,
+	)
+	eTsFmt2 = "Jan _2 15:04:05"
 )
 
 func (p failedConnEventParser) Parse(s string) (FailedConnEvent, error) {
-	rs := eRegex.FindStringSubmatch(s)
+	rs := eRegexp1.FindStringSubmatch(s)
 	if len(rs) != 5 {
-		return FailedConnEvent{}, errWrongFormat
+		rs = eRegexp2.FindStringSubmatch(s)
+		if len(rs) != 5 {
+			return FailedConnEvent{}, errWrongFormat
+		}
 	}
 
-	ts, err := time.Parse("2006-01-02T15:04:05", rs[1])
+	ts, err := time.Parse(eTsFmt1, rs[1])
 	if err != nil {
-		return FailedConnEvent{}, errWrongFormat
+		ts, err = time.Parse(eTsFmt2, rs[1])
+		if err != nil {
+			return FailedConnEvent{}, errWrongFormat
+		}
 	}
 
 	username := rs[2]
