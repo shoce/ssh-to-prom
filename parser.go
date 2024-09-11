@@ -23,24 +23,16 @@ type failedConnEventParser struct{}
 var (
 	errWrongFormat = errors.New("wrong event format")
 
+	eRegexpSuffix = `(?:Invalid user|Failed password for) (\S+) from (\S+) port (\S+)`
+
 	// https://pkg.go.dev/regexp/syntax
-	eRegexp1 = regexp.MustCompile(
-		`^(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d)\..*: ` +
-			`Invalid user (\S+) ` +
-			`from (\S+) ` +
-			`port (\S+)`,
-	)
+	eRegexp1 = regexp.MustCompile(`^(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d)\..*: ` + eRegexpSuffix)
 	// https://pkg.go.dev/time
 	eTsFmt1 = "2006-01-02T15:04:05"
 
 	// https://pkg.go.dev/regexp/syntax
-	eRegexp2 = regexp.MustCompile(
-		`^(\w\w\w +\d\d? \d\d:\d\d:\d\d) .*: ` +
-			`Invalid user (\S+) ` +
-			`from (\S+) ` +
-			`port (\S+)`,
-	)
-	eTsFmt2 = "Jan _2 15:04:05"
+	eRegexp2 = regexp.MustCompile(`^(\w\w\w +\d\d? \d\d:\d\d:\d\d) .*: ` + eRegexpSuffix)
+	eTsFmt2  = "Jan _2 15:04:05"
 )
 
 func (p failedConnEventParser) Parse(s string) (FailedConnEvent, error) {
