@@ -23,39 +23,46 @@ type failedConnEventParser struct{}
 var (
 	errWrongFormat = errors.New("wrong event format")
 
-	eRegexpSuffix = `(?:Invalid user|Failed password for) (\S+) from (\S+) port (\S+)`
+	logReSubmatchCount = 4
+	logReSuffix        = `(?:Invalid user|Failed password for) (\S+) from (\S+) port (\S+)`
 
-	// https://pkg.go.dev/regexp/syntax
-	eRegexp1 = regexp.MustCompile(`^(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d)\..*: ` + eRegexpSuffix)
-	// https://pkg.go.dev/time
-	eTsFmt1 = "2006-01-02T15:04:05"
-
-	// https://pkg.go.dev/regexp/syntax
-	eRegexp2 = regexp.MustCompile(`^(\w\w\w +\d\d? \d\d:\d\d:\d\d) .*: ` + eRegexpSuffix)
-	eTsFmt2  = "Jan _2 15:04:05"
+	TsFormats = []struct {
+		// https://pkg.go.dev/regexp/syntax
+		timeRe *regexp.Regexp
+		// https://pkg.go.dev/time
+		timeFmt string
+	}{
+		{regexp.MustCompile(`^(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d)\..*: ` + logReSuffix), "2006-01-02T15:04:05"},
+		{regexp.MustCompile(`^(\w\w\w +\d\d? \d\d:\d\d:\d\d) .*: ` + logReSuffix), "Jan _2 15:04:05"},
+	}
 )
 
 func (p failedConnEventParser) Parse(s string) (FailedConnEvent, error) {
-	rs := eRegexp1.FindStringSubmatch(s)
-	if len(rs) != 5 {
-		rs = eRegexp2.FindStringSubmatch(s)
-		if len(rs) != 5 {
-			return FailedConnEvent{}, errWrongFormat
+	var timeReSm []string
+	var timeFmt string
+
+	for _, tf := range TsFormats {
+		rs := tf.timeRe.FindStringSubmatch(s)
+		if len(rs) == logReSubmatchCount+1 {
+			timeReSm = rs
+			timeFmt = tf.timeFmt
+			break
 		}
 	}
 
-	ts, err := time.Parse(eTsFmt1, rs[1])
+	if timeReSm == nil {
+		return FailedConnEvent{}, errWrongFormat
+	}
+
+	ts, err := time.Parse(timeFmt, timeReSm[1])
 	if err != nil {
-		ts, err = time.Parse(eTsFmt2, rs[1])
-		if err != nil {
-			return FailedConnEvent{}, errWrongFormat
-		}
+		return FailedConnEvent{}, errWrongFormat
 	}
 
-	username := rs[2]
-	ipaddr := net.ParseIP(rs[3])
+	username := timeReSm[2]
+	ipaddr := net.ParseIP(timeReSm[3])
 
-	tcpport, err := strconv.Atoi(rs[4])
+	tcpport, err := strconv.Atoi(timeReSm[4])
 	if err != nil {
 		return FailedConnEvent{}, errWrongFormat
 	}
