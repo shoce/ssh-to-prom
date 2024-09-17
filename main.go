@@ -2,29 +2,46 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	log "github.com/sirupsen/logrus"
 )
 
 var (
+	DEBUG bool
+
 	filename       = flag.String("f", "/var/log/auth.log", "ssh log file source")
 	prometheusPort = flag.String("m", ":2112", "prometheus port")
 	geolocate      = flag.Bool("g", true, "geolocation service enabled/disabled")
 	debug          = flag.Bool("d", false, "debug mode enabled")
 )
 
-const apiStackKey = "SSH2PROM_IPSTACK_ACCESSKEY"
+const (
+	NL = "\n"
+
+	apiStackKey = "SSH2PROM_IPSTACK_ACCESSKEY"
+)
+
+func log(msg interface{}, args ...interface{}) {
+	t := time.Now().Local()
+	ts := fmt.Sprintf(
+		"%03d."+"%02d%02d."+"%02d"+"%02d.",
+		t.Year()%1000, t.Month(), t.Day(), t.Hour(), t.Minute(),
+	)
+	msgtext := fmt.Sprintf("%s %s", ts, msg) + NL
+	fmt.Fprintf(os.Stderr, msgtext, args...)
+}
 
 func main() {
 	flag.Parse()
 
 	if *debug {
-		log.SetLevel(log.DebugLevel)
+		DEBUG = true
 	}
 
 	// Setup geolocation services
@@ -69,11 +86,13 @@ func main() {
 		select {
 		case ev := <-respChan:
 			rep.Report(ev)
-			log.Debugf("Reported %v", ev)
+			if DEBUG {
+				log("Reported %v", ev)
+			}
 		case err := <-errorChan:
-			log.Debugf("Error %v", err)
+			log("Error %v", err)
 		case _ = <-sigs:
-			log.Debugf("Shutting down")
+			log("Shutting down")
 			os.Exit(0)
 		}
 	}
