@@ -25,7 +25,7 @@ spec:
       containers:
       - name: ssh-to-prom
         imagePullPolicy: IfNotPresent
-        image: "{{ $.Values.ImageNameInfraSshToProm }}:{{ $.Values.ImageTagInfraSshToProm }}"
+        image: "{{ $.Values.ImageNameGithubSshToProm }}:{{ $.Values.ImageTagGithubSshToProm }}"
         ports:
           - containerPort: {{ $.Values.MetricsPort }}
         envFrom:

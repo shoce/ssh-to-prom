@@ -1,7 +1,7 @@
 ---
 
-ImageNameInfraSshToProm: ghcr.io/shoce/ssh-to-prom
-ImageTagInfraSshToProm: ''
+ImageNameGithubSshToProm: ghcr.io/shoce/ssh-to-prom
+ImageTagGithubSshToProm: ''
 
 IngressDomain: ssh-to-prom.domain.com
 IngressBasicAuthUsername: ""
