@@ -60,7 +60,9 @@ func (fr fileReader) Start() {
 		case s := <-linesChan:
 			ev, err := fr.parser.Parse(string(s.Bytes()))
 			if err != nil {
-				fr.errorChan <- err
+				if err != io.EOF {
+					fr.errorChan <- err
+				}
 				continue // wrong format is not considered an error, I'll handle this better later
 			}
 
