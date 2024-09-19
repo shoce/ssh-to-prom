@@ -92,11 +92,11 @@ func main() {
 		case ev := <-respChan:
 			rep.Report(ev)
 			if DEBUG {
-				log("DEBUG reported %+v", ev)
+				log("DEBUG reported %v", ev)
 			}
 
 		case err := <-errorChan:
-			log("ERROR %+v", err)
+			log("ERROR %#v", err)
 
 		case _ = <-sigs:
 			log("shutting down")
