@@ -10,7 +10,7 @@ import (
 
 // EventParser provides the logic to map from a raw event to a FailedConnEvent
 type EventParser interface {
-	Parse(s string) (FailedConnEvent, error)
+	Parse(s string) (*FailedConnEvent, error)
 }
 
 // NewFailedConnEventParser returns an implementation of EventParser
@@ -23,27 +23,31 @@ type failedConnEventParser struct{}
 var (
 	errWrongFormat = errors.New("wrong event format")
 
-	logReSubmatchCount = 4
-	logReSuffix        = `(?:Invalid user|Failed password for) (\S+) from (\S+) port (\S+)`
+	logMsgRe     = `(?:Invalid user|Failed password for) (\S+) from (\S+) port (\S+)`
+	logMsgRegexp = regexp.MustCompile(logMsgRe)
 
 	TsFormats = []struct {
 		// https://pkg.go.dev/regexp/syntax
-		timeRe *regexp.Regexp
+		logRe *regexp.Regexp
 		// https://pkg.go.dev/time
 		timeFmt string
 	}{
-		{regexp.MustCompile(`^(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d)\..*: ` + logReSuffix), "2006-01-02T15:04:05"},
-		{regexp.MustCompile(`^(\w\w\w +\d\d? \d\d:\d\d:\d\d) .*: ` + logReSuffix), "Jan _2 15:04:05"},
+		{regexp.MustCompile(`^(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d)\..*: ` + logMsgRe), "2006-01-02T15:04:05"},
+		{regexp.MustCompile(`^(\w\w\w +\d\d? \d\d:\d\d:\d\d) .*: ` + logMsgRe), "Jan _2 15:04:05"},
 	}
 )
 
-func (p failedConnEventParser) Parse(s string) (FailedConnEvent, error) {
+func (p failedConnEventParser) Parse(s string) (*FailedConnEvent, error) {
+	if !logMsgRegexp.MatchString(s) {
+		return nil, nil
+	}
+
 	var timeReSm []string
 	var timeFmt string
 
 	for _, tf := range TsFormats {
-		rs := tf.timeRe.FindStringSubmatch(s)
-		if len(rs) == logReSubmatchCount+1 {
+		rs := tf.logRe.FindStringSubmatch(s)
+		if len(rs) == tf.logRe.NumSubexp()+1 {
 			timeReSm = rs
 			timeFmt = tf.timeFmt
 			break
@@ -51,12 +55,12 @@ func (p failedConnEventParser) Parse(s string) (FailedConnEvent, error) {
 	}
 
 	if timeReSm == nil {
-		return FailedConnEvent{}, errWrongFormat
+		return &FailedConnEvent{}, errWrongFormat
 	}
 
 	ts, err := time.Parse(timeFmt, timeReSm[1])
 	if err != nil {
-		return FailedConnEvent{}, errWrongFormat
+		return &FailedConnEvent{}, errWrongFormat
 	}
 
 	username := timeReSm[2]
@@ -64,13 +68,13 @@ func (p failedConnEventParser) Parse(s string) (FailedConnEvent, error) {
 
 	tcpport, err := strconv.Atoi(timeReSm[4])
 	if err != nil {
-		return FailedConnEvent{}, errWrongFormat
+		return &FailedConnEvent{}, errWrongFormat
 	}
 
 	// The logs do not have information about the year, so we're just assuming we're parsing current year logs
 	ts = time.Date(ts.Year(), ts.Month(), ts.Day(), ts.Hour(), ts.Minute(), ts.Second(), ts.Nanosecond(), time.UTC)
 
-	return FailedConnEvent{
+	return &FailedConnEvent{
 		Username:  username,
 		IPAddress: ipaddr,
 		Port:      tcpport,

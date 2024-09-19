@@ -64,15 +64,20 @@ func (fr fileReader) Start() {
 				continue // wrong format is not considered an error, I'll handle this better later
 			}
 
+			if ev == nil {
+				continue
+			}
+
 			for _, opt := range fr.options {
-				ev, err = opt.Apply(ev)
+				*ev, err = opt.Apply(*ev)
 				if err != nil {
 					fr.errorChan <- err
 					continue
 				}
 			}
 
-			fr.respChan <- ev
+			fr.respChan <- *ev
+
 		case <-fr.done:
 			close(linesChan)
 			return
