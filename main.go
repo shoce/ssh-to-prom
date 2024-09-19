@@ -1,3 +1,10 @@
+/*
+
+go get -a -u -v
+go mod tidy
+
+*/
+
 package main
 
 import (
