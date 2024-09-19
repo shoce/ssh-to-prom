@@ -40,8 +40,11 @@ func log(msg interface{}, args ...interface{}) {
 func main() {
 	flag.Parse()
 
+	log("starting")
+
 	if *debug {
 		DEBUG = true
+		log("DEBUG messages will be logged")
 	}
 
 	// Setup geolocation services
@@ -69,6 +72,7 @@ func main() {
 
 	reader := NewFileReader(*filename, parser, respChan, errorChan, readerOpts...)
 	go reader.Start()
+	log("started reader for file `%s`", *filename)
 	defer reader.Stop()
 	defer close(respChan)
 	defer close(errorChan)
@@ -84,16 +88,20 @@ func main() {
 
 	for {
 		select {
+
 		case ev := <-respChan:
 			rep.Report(ev)
 			if DEBUG {
 				log("Reported %v", ev)
 			}
+
 		case err := <-errorChan:
 			log("Error %v", err)
+
 		case _ = <-sigs:
 			log("Shutting down")
 			os.Exit(0)
+
 		}
 	}
 }
