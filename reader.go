@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"io"
 
 	tail "github.com/papertrail/go-tail/follower"
@@ -61,7 +60,7 @@ func (fr fileReader) Start() {
 		case s := <-linesChan:
 			ev, err := fr.parser.Parse(string(s.Bytes()))
 			if err != nil {
-				if !errors.Is(err, io.EOF) {
+				if err != io.EOF && err.Error() != "EOF" {
 					fr.errorChan <- err
 				}
 				continue // wrong format is not considered an error, I'll handle this better later
