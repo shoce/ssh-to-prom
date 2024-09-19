@@ -40,7 +40,7 @@ func log(msg interface{}, args ...interface{}) {
 func main() {
 	flag.Parse()
 
-	log("starting")
+	log("starting up")
 
 	if *debug {
 		DEBUG = true
@@ -92,14 +92,14 @@ func main() {
 		case ev := <-respChan:
 			rep.Report(ev)
 			if DEBUG {
-				log("Reported %v", ev)
+				log("DEBUG reported %+v", ev)
 			}
 
 		case err := <-errorChan:
-			log("Error %v", err)
+			log("ERROR %+v", err)
 
 		case _ = <-sigs:
-			log("Shutting down")
+			log("shutting down")
 			os.Exit(0)
 
 		}
