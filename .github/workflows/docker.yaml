@@ -9,6 +9,7 @@ permissions:
 on:
   push:
     branches:
+      - dev
       - main
       - master
     paths-ignore:
