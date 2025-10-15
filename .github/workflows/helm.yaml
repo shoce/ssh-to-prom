@@ -49,7 +49,7 @@ jobs:
         with:
           package-name: ${{ github.event.repository.name }}/${{ env.HELM_CHART_NAME }}
           package-type: container
-          min-versions-to-keep: 1
+          min-versions-to-keep: 2
           delete-only-untagged-versions: "false"
 
 
