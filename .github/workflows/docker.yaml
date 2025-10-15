@@ -11,6 +11,9 @@ on:
     branches:
       - main
       - master
+    paths-ignore:
+      - 'helm/**'
+      - '.github/workflows/helm.yaml'
 
 env:
   REGISTRY: ghcr.io
