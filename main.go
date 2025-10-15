@@ -1,7 +1,6 @@
 /*
 
-go get -a -u -v
-go mod tidy
+GoGet GoFmt GoBuildNull
 
 */
 
