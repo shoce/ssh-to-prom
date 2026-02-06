@@ -1,9 +1,9 @@
 
 # https://hub.docker.com/_/golang/tags
-FROM golang:1.25 AS build
-RUN mkdir -p /root/ssh-to-prom/
-COPY *.go go.mod go.sum /root/ssh-to-prom/
-WORKDIR /root/ssh-to-prom/
+FROM golang:1.25-alpine AS build
+RUN mkdir -p /ssh-to-prom/
+COPY *.go go.mod go.sum /ssh-to-prom/
+WORKDIR /ssh-to-prom/
 RUN go version
 RUN go get -a -u -v
 RUN ls -l -a
@@ -12,12 +12,11 @@ RUN ls -l -a
 
 
 # https://hub.docker.com/_/alpine/tags
-FROM alpine:3.22
-RUN apk add --no-cache tzdata
-RUN apk add --no-cache gcompat && ln -s -f -v ld-linux-x86-64.so.2 /lib/libresolv.so.2
-RUN mkdir -p /opt/ssh-to-prom/
-COPY --from=build /root/ssh-to-prom/ssh-to-prom /opt/ssh-to-prom/ssh-to-prom
-RUN ls -l -a /opt/ssh-to-prom/
-WORKDIR /opt/ssh-to-prom/
-ENTRYPOINT ["./ssh-to-prom"]
+FROM alpine:3
+RUN apk add --no-cache tzdata gcompat && ln -s -f -v ld-linux-x86-64.so.2 /lib/libresolv.so.2
+RUN mkdir -p /ssh-to-prom/
+COPY --from=build /ssh-to-prom/ssh-to-prom /ssh-to-prom/ssh-to-prom
+RUN ls -l -a /ssh-to-prom/
+WORKDIR /ssh-to-prom/
+ENTRYPOINT ["/ssh-to-prom/ssh-to-prom"]
 

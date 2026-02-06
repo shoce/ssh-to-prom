@@ -14,12 +14,12 @@ type AsyncEventReader interface {
 
 // ReaderOption defines the interface for event enrichment
 type ReaderOption interface {
-	Apply(FailedConnEvent) (FailedConnEvent, error)
+	Apply(ConnEvent) (ConnEvent, error)
 }
 
 type fileReader struct {
 	parser    EventParser
-	respChan  chan FailedConnEvent
+	eventChan chan ConnEvent
 	errorChan chan error
 	done      chan bool
 	options   []ReaderOption
@@ -27,12 +27,12 @@ type fileReader struct {
 }
 
 // NewFileReader returns an instance of reader
-func NewFileReader(filename string, parser EventParser, respChan chan FailedConnEvent, errorChan chan error, options ...ReaderOption) AsyncEventReader {
+func NewFileReader(filename string, parser EventParser, eventChan chan ConnEvent, errorChan chan error, options ...ReaderOption) AsyncEventReader {
 	done := make(chan bool)
 	return fileReader{
 		filename:  filename,
 		parser:    parser,
-		respChan:  respChan,
+		eventChan: eventChan,
 		errorChan: errorChan,
 		done:      done,
 		options:   options,
@@ -78,7 +78,7 @@ func (fr fileReader) Start() {
 				}
 			}
 
-			fr.respChan <- *ev
+			fr.eventChan <- *ev
 
 		case <-fr.done:
 			close(linesChan)

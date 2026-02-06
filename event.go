@@ -5,11 +5,11 @@ import (
 	"time"
 )
 
-// FailedConnEvent represents a reportable failed connection ocurrence
-type FailedConnEvent struct {
-	Username  string
-	Timestamp time.Time
-	IPAddress net.IP
-	Port      int
-	Country   string
+type ConnEvent struct {
+	Timestamp  time.Time
+	Accepted   bool
+	AuthMethod string
+	User       string
+	Addr       net.IP
+	Port       int
 }

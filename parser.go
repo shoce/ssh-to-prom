@@ -8,25 +8,19 @@ import (
 	"time"
 )
 
-// EventParser provides the logic to map from a raw event to a FailedConnEvent
 type EventParser interface {
-	Parse(s string) (*FailedConnEvent, error)
+	Parse(s string) (*ConnEvent, error)
 }
 
-// NewFailedConnEventParser returns an implementation of EventParser
-func NewFailedConnEventParser() EventParser {
-	return failedConnEventParser{}
-}
-
-type failedConnEventParser struct{}
+type ConnEventParser struct{}
 
 var (
 	errWrongFormat = errors.New("wrong event format")
 
-	logMsgRe     = `(?:Invalid user|Failed password for) (\S+) from (\S+) port (\S+)`
+	logMsgRe     = `(Accepted|Failed) (password|publickey) for (?:invalid user |)(\S+) from (\S+) port (\S+)`
 	logMsgRegexp = regexp.MustCompile(logMsgRe)
 
-	TsFormats = []struct {
+	logFormats = []struct {
 		// https://pkg.go.dev/regexp/syntax
 		logRe *regexp.Regexp
 		// https://pkg.go.dev/time
@@ -37,48 +31,51 @@ var (
 	}
 )
 
-func (p failedConnEventParser) Parse(s string) (*FailedConnEvent, error) {
+func (p ConnEventParser) Parse(s string) (*ConnEvent, error) {
 	if !logMsgRegexp.MatchString(s) {
 		return nil, nil
 	}
 
-	var timeReSm []string
+	var logReSm []string
 	var timeFmt string
 
-	for _, tf := range TsFormats {
-		rs := tf.logRe.FindStringSubmatch(s)
-		if len(rs) == tf.logRe.NumSubexp()+1 {
-			timeReSm = rs
-			timeFmt = tf.timeFmt
+	for _, logfmt := range logFormats {
+		logresm := logfmt.logRe.FindStringSubmatch(s)
+		if len(logresm) == logfmt.logRe.NumSubexp()+1 {
+			logReSm = logresm
+			timeFmt = logfmt.timeFmt
 			break
 		}
 	}
 
-	if timeReSm == nil {
-		return &FailedConnEvent{}, errWrongFormat
+	if logReSm == nil {
+		return &ConnEvent{}, errWrongFormat
 	}
 
-	ts, err := time.Parse(timeFmt, timeReSm[1])
+	ts, err := time.Parse(timeFmt, logReSm[1])
 	if err != nil {
-		return &FailedConnEvent{}, errWrongFormat
+		return &ConnEvent{}, errWrongFormat
 	}
 
-	username := timeReSm[2]
-	ipaddr := net.ParseIP(timeReSm[3])
+	accepted := logReSm[2] == "Accepted"
+	authmethod := logReSm[3]
+	user := logReSm[4]
+	addr := net.ParseIP(logReSm[5])
 
-	tcpport, err := strconv.Atoi(timeReSm[4])
+	port, err := strconv.Atoi(logReSm[6])
 	if err != nil {
-		return &FailedConnEvent{}, errWrongFormat
+		return &ConnEvent{}, errWrongFormat
 	}
 
 	// The logs do not have information about the year, so we're just assuming we're parsing current year logs
 	ts = time.Date(ts.Year(), ts.Month(), ts.Day(), ts.Hour(), ts.Minute(), ts.Second(), ts.Nanosecond(), time.UTC)
 
-	return &FailedConnEvent{
-		Username:  username,
-		IPAddress: ipaddr,
-		Port:      tcpport,
-		Timestamp: ts,
-		Country:   "unknown",
+	return &ConnEvent{
+		Timestamp:  ts,
+		Accepted:   accepted,
+		AuthMethod: authmethod,
+		User:       user,
+		Addr:       addr,
+		Port:       port,
 	}, nil
 }

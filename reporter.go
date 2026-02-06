@@ -4,28 +4,39 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-// Counter to track failed ssh login attempts
-var failedAttempts = prometheus.NewCounterVec(
+var acceptedCounter = prometheus.NewCounterVec(
 	prometheus.CounterOpts{
-		Name: "failed_conn_attempts_total",
+		Name: "ssh_accepted_total",
+		Help: "Number of accepted ssh connection attempts",
+	},
+	[]string{"authmethod", "username"},
+)
+
+var failedCounter = prometheus.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "ssh_failed_total",
 		Help: "Number of failed ssh connection attempts",
 	},
-	[]string{"country"},
+	[]string{"authmethod", "username"},
 )
 
 // Reporter defines the behaviour for failed connection event reporters
 type Reporter interface {
-	Report(e FailedConnEvent) error
+	Report(e ConnEvent) error
 }
 
 type prometheusReporter struct{}
 
-func (pr prometheusReporter) Report(e FailedConnEvent) error {
-	failedAttempts.WithLabelValues(e.Country).Inc()
-
+func (pr prometheusReporter) Report(e ConnEvent) error {
+	if e.Accepted {
+		acceptedCounter.WithLabelValues(e.AuthMethod, e.User).Inc()
+	} else {
+		failedCounter.WithLabelValues(e.AuthMethod, e.User).Inc()
+	}
 	return nil
 }
 
 func init() {
-	prometheus.MustRegister(failedAttempts)
+	prometheus.MustRegister(acceptedCounter)
+	prometheus.MustRegister(failedCounter)
 }

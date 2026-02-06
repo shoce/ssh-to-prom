@@ -1,16 +1,15 @@
 ---
-apiVersion: v1
-kind: Service
+apiVersion: "v1"
+kind: "Service"
 metadata:
-  namespace: {{ $.Release.Namespace }}
-  name: ssh-to-prom
+  namespace: "{{ $.Release.Namespace }}"
+  name: "ssh-to-prom"
   labels:
-    app: ssh-to-prom
+    app: "ssh-to-prom"
 spec:
   selector:
-    app: ssh-to-prom
-  type: ClusterIP
+    app: "ssh-to-prom"
+  type: "ClusterIP"
   ports:
     - port: 80
-
 
