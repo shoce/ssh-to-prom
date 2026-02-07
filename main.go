@@ -61,7 +61,7 @@ func main() {
 
 	reader := NewFileReader(*filename, parser, eventChan, errorChan, readerOpts...)
 	go reader.Start()
-	perr("DEBUG started reader for file [%s]", *filename)
+	perr("started reader for file [%s]", *filename)
 	defer reader.Stop()
 	defer close(eventChan)
 	defer close(errorChan)
@@ -79,7 +79,10 @@ func main() {
 		case ev := <-eventChan:
 			rep.Report(ev)
 			if DEBUG {
-				perr("DEBUG reported %+v", ev)
+				perr(
+					"DEBUG reported { @Timestamp [%s] @Accepted <%t> @AuthMethod [%s] @User [%s] @Addr [%s] @Port <%d> }",
+					ev.Timestamp, ev.Accepted, ev.AuthMethod, ev.User, ev.Addr, ev.Port,
+				)
 			}
 
 		case err := <-errorChan:

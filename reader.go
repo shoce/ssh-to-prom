@@ -6,13 +6,11 @@ import (
 	tail "github.com/papertrail/go-tail/follower"
 )
 
-// AsyncEventReader defines a StartStopper interface for an async read worker
 type AsyncEventReader interface {
 	Start()
 	Stop()
 }
 
-// ReaderOption defines the interface for event enrichment
 type ReaderOption interface {
 	Apply(ConnEvent) (ConnEvent, error)
 }
@@ -26,7 +24,6 @@ type fileReader struct {
 	filename  string
 }
 
-// NewFileReader returns an instance of reader
 func NewFileReader(filename string, parser EventParser, eventChan chan ConnEvent, errorChan chan error, options ...ReaderOption) AsyncEventReader {
 	done := make(chan bool)
 	return fileReader{
@@ -50,7 +47,7 @@ func (fr fileReader) Start() {
 		Reopen: true,
 	})
 	if err != nil {
-		panic("Error tracking: " + err.Error())
+		panic("ERROR tracking " + err.Error())
 	}
 
 	linesChan := t.Lines()
@@ -63,7 +60,7 @@ func (fr fileReader) Start() {
 				if err != io.EOF && err.Error() != "EOF" {
 					fr.errorChan <- err
 				}
-				continue // wrong format is not considered an error, I'll handle this better later
+				continue // TODO wrong format is not considered an error, I'll handle this better later
 			}
 
 			if ev == nil {
