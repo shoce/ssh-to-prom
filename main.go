@@ -32,7 +32,7 @@ const (
 func perr(msg string, args ...interface{}) {
 	tnow := time.Now().Local()
 	ts := fmt.Sprintf(
-		"%03d%02d%02d."+"%02d"+"%02d",
+		"%03d%02d%02d.%02d%02d",
 		tnow.Year()%1000, tnow.Month(), tnow.Day(), tnow.Hour(), tnow.Minute(),
 	)
 	if len(args) == 0 {
@@ -81,7 +81,7 @@ func main() {
 			if DEBUG {
 				perr(
 					"DEBUG reported @{ @Timestamp [%s] @Accepted <%t> @AuthMethod [%s] @User [%s] @Addr [%s] @Port <%d> }",
-					ev.Timestamp.Format(time.RFC3339), ev.Accepted, ev.AuthMethod, ev.User, ev.Addr, ev.Port,
+					ev.Timestamp.Format("20060102.150405"), ev.Accepted, ev.AuthMethod, ev.User, ev.Addr, ev.Port,
 				)
 			}
 
