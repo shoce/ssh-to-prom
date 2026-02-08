@@ -26,8 +26,8 @@ var (
 		// https://pkg.go.dev/time
 		timeFmt string
 	}{
-		{regexp.MustCompile(`^(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d)\..*: ` + logMsgRe), "2006-01-02T15:04:05"},
-		{regexp.MustCompile(`^(\w\w\w +\d\d? \d\d:\d\d:\d\d) .*: ` + logMsgRe), "Jan _2 15:04:05"},
+		{regexp.MustCompile(`^(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d)\.\S+ \S+ \S+: ` + logMsgRe), "2006-01-02T15:04:05"},
+		{regexp.MustCompile(`^(\w\w\w +\d\d? \d\d:\d\d:\d\d) \S+ \S+: ` + logMsgRe), "Jan _2 15:04:05"},
 	}
 )
 
