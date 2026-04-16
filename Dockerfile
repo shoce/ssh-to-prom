@@ -1,6 +1,6 @@
 
 # https://hub.docker.com/_/golang/tags
-FROM golang:1.25-alpine AS build
+FROM golang:1.26-alpine AS build
 RUN mkdir -p /ssh-to-prom/
 COPY *.go go.mod go.sum /ssh-to-prom/
 WORKDIR /ssh-to-prom/

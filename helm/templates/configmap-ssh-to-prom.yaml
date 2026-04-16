@@ -1,8 +1,9 @@
----
 apiVersion: "v1"
 kind: "ConfigMap"
+
 metadata:
-  namespace: "{{ $.Release.Namespace }}"
   name: "ssh-to-prom"
+  namespace: "{{ $.Release.Namespace }}"
+
 data:
 

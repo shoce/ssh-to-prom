@@ -1,6 +1,6 @@
 apiVersion: "v2"
 name: "helm.ssh-to-prom"
-description: "Track failed ssh access attempts and expose them as prometheus metrics"
+description: "Track failed and successful ssh access attempts and expose them as prometheus metrics"
 type: "application"
 version: "__VERSION__"
 appVersion: "__VERSION__"

@@ -18,10 +18,10 @@ DEBUG: false
 IngressRequestMaxBodySizeString: "200m"
 
 IngressWhitelistSourceRange:
-- 127.0.0.0/8
-- 10.0.0.0/8
-- 172.16.0.0/12
-- ::1/128
-- fe80::/10
+- "127.0.0.0/8"
+- "10.0.0.0/8"
+- "172.16.0.0/12"
+- "::1/128"
+- "fe80::/10"
 
 
