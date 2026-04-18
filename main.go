@@ -11,7 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/prometheus/client_golang/prometheus/promhttp"
+	promhttp "github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var (
