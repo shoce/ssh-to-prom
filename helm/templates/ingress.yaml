@@ -1,3 +1,5 @@
+{{ if $.Values.IngressDomain -}}
+
 apiVersion: "networking.k8s.io/v1"
 kind: "Ingress"
 
@@ -11,8 +13,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
     nginx.ingress.kubernetes.io/auth-type: "basic"
-    nginx.ingress.kubernetes.io/auth-secret: "{{ $.Release.Namespace }}-basic-auth-secret"
-    nginx.ingress.kubernetes.io/auth-secret-type: "auth-file"
+    nginx.ingress.kubernetes.io/auth-secret: "ssh-to-prom-basicauth"
 
 spec:
 
@@ -31,4 +32,6 @@ spec:
             name: "ssh-to-prom"
             port:
               number: 80
+
+{{ end }}
 

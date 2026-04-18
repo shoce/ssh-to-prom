@@ -1,0 +1,14 @@
+{{ if $.Values.IngressRouteDomain -}}
+
+apiVersion: "traefik.io/v1alpha1"
+kind: "Middleware"
+
+metadata:
+  name: "ssh-to-prom-basicauth"
+
+spec:
+  basicAuth:
+    secret: "ssh-to-prom-basicauth"
+
+{{ end }}
+

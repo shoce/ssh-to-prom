@@ -1,0 +1,25 @@
+{{ if $.Values.IngressRouteDomain -}}
+
+apiVersion: "traefik.io/v1alpha1"
+kind: "IngressRoute"
+
+metadata:
+  name: "ssh-to-prom"
+  namespace: "{{ $.Release.Namespace }}"
+
+spec:
+
+  entryPoints:
+    - "websecure"
+
+  routes:
+    - kind: "Rule"
+      match: "Host(`{{ $.Values.IngressRouteDomain }}`)"
+      services:
+        - name: "ssh-to-prom"
+          port: 80
+      middlewares:
+        - name: "ssh-to-prom-basicauth"
+
+{{ end }}
+

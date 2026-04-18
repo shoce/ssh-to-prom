@@ -3,7 +3,8 @@
 ImageNameGithubSshToProm: "ghcr.io/shoce/ssh-to-prom"
 ImageTagGithubSshToProm: ""
 
-IngressDomain: "ssh-to-prom.domain.com"
+IngressRouteDomain: ""
+IngressDomain: ""
 IngressBasicAuthUsername: ""
 IngressBasicAuthPassword: ""
 

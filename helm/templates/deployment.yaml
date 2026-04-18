@@ -23,7 +23,7 @@ spec:
     spec:
 
       volumes:
-      - name: "auth-log-volume"
+      - name: "auth-log"
         hostPath:
           path: "{{ $.Values.AuthLogPath }}"
           type: "File"
@@ -37,13 +37,9 @@ spec:
         ports:
           - containerPort: {{ $.Values.MetricsPort }}
 
-        envFrom:
-          - configMapRef:
-              name: "ssh-to-prom"
-
         volumeMounts:
           - mountPath: "{{ $.Values.AuthLogPath }}"
-            name: "auth-log-volume"
+            name: "auth-log"
 
         command:
 

@@ -4,5 +4,5 @@ description: "Track failed and successful ssh access attempts and expose them as
 type: "application"
 version: "__VERSION__"
 appVersion: "__VERSION__"
-home: "https://github.com/shoce/ssh-to-prom/helm/index.html"
+home: "https://github.com/shoce/ssh-to-prom/tree/master/helm"
 
