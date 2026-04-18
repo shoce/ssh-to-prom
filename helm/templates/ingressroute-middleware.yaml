@@ -5,6 +5,7 @@ kind: "Middleware"
 
 metadata:
   name: "ssh-to-prom-basicauth"
+  namespace: "{{ $.Release.Namespace }}"
 
 spec:
   basicAuth:
