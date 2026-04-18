@@ -17,6 +17,8 @@ metadata:
 
 spec:
 
+  ingressClassName: "nginx"
+
   tls:
   - hosts:
     - "{{ $.Values.IngressDomain }}"
