@@ -24,11 +24,8 @@ metadata:
   namespace: "{{$.Release.Namespace}}"
 
 spec:
-
-  entryPoints:
-    - "websecure"
-
   routes:
+  
     - kind: "Rule"
       match: "Host(`{{$.Values.IngressRouteDomain}}`)"
       services:
