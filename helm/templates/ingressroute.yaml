@@ -7,7 +7,7 @@ kind: "Middleware"
 
 metadata:
   name: "ssh-to-prom-basicauth"
-  namespace: "{{ $.Release.Namespace }}"
+  namespace: "{{$.Release.Namespace}}"
 
 spec:
   basicAuth:
@@ -21,7 +21,7 @@ kind: "IngressRoute"
 
 metadata:
   name: "ssh-to-prom"
-  namespace: "{{ $.Release.Namespace }}"
+  namespace: "{{$.Release.Namespace}}"
 
 spec:
 
@@ -30,7 +30,7 @@ spec:
 
   routes:
     - kind: "Rule"
-      match: "Host(`{{ $.Values.IngressRouteDomain }}`)"
+      match: "Host(`{{$.Values.IngressRouteDomain}}`)"
       services:
         - name: "ssh-to-prom"
           port: 80

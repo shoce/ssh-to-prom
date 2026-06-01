@@ -3,7 +3,7 @@ kind: "Deployment"
 
 metadata:
   name: "ssh-to-prom"
-  namespace: "{{ $.Release.Namespace }}"
+  namespace: "{{$.Release.Namespace}}"
   labels:
     app: "ssh-to-prom"
 
@@ -25,29 +25,29 @@ spec:
       volumes:
       - name: "auth-log"
         hostPath:
-          path: "{{ $.Values.AuthLogPath }}"
+          path: "{{$.Values.AuthLogPath}}"
           type: "File"
 
       containers:
 
       - name: "ssh-to-prom"
         imagePullPolicy: "IfNotPresent"
-        image: "{{ $.Values.ImageNameGithubSshToProm }}:{{ $.Values.ImageTagGithubSshToProm }}"
+        image: "{{$.Values.ImageNameGithubSshToProm}}:{{$.Values.ImageTagGithubSshToProm}}"
 
         ports:
-          - containerPort: {{ $.Values.MetricsPort }}
+          - containerPort: {{$.Values.MetricsPort}}
 
         volumeMounts:
-          - mountPath: "{{ $.Values.AuthLogPath }}"
+          - mountPath: "{{$.Values.AuthLogPath}}"
             name: "auth-log"
 
         command:
 
           - "./ssh-to-prom"
           - "-f"
-          - "{{ $.Values.AuthLogPath }}"
+          - "{{$.Values.AuthLogPath}}"
           - "-m"
-          - ":{{ $.Values.MetricsPort }}"
+          - ":{{$.Values.MetricsPort}}"
           - "-d"
-          - "{{ $.Values.DEBUG }}"
+          - "{{$.Values.DEBUG}}"
 

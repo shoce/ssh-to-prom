@@ -5,10 +5,10 @@ kind: "Ingress"
 
 metadata:
   name: "ssh-to-prom"
-  namespace: "{{ $.Release.Namespace }}"
+  namespace: "{{$.Release.Namespace}}"
   annotations:
     kubernetes.io/ingress.allow-http: "false"
-    nginx.ingress.kubernetes.io/proxy-body-size: "{{ $.Values.IngressRequestMaxBodySizeString }}"
+    nginx.ingress.kubernetes.io/proxy-body-size: "{{$.Values.IngressRequestMaxBodySizeString}}"
     nginx.ingress.kubernetes.io/whitelist-source-range: "{{ $.Values.IngressWhitelistSourceRange | join ", " }}"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
@@ -21,10 +21,10 @@ spec:
 
   tls:
   - hosts:
-    - "{{ $.Values.IngressDomain }}"
+    - "{{$.Values.IngressDomain}}"
 
   rules:
-  - host: "{{ $.Values.IngressDomain }}"
+  - host: "{{$.Values.IngressDomain}}"
     http:
       paths:
       - path: "/"

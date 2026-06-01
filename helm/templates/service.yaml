@@ -3,7 +3,7 @@ kind: "Service"
 
 metadata:
   name: "ssh-to-prom"
-  namespace: "{{ $.Release.Namespace }}"
+  namespace: "{{$.Release.Namespace}}"
   labels:
     app: "ssh-to-prom"
 
